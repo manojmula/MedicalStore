@@ -3,6 +3,21 @@ const express = require('express')
 const app = express()
 const port = 3002
 
+//Importing express handlebars
+var exphbs = require('express-handlebars');
+const helpers = require('./lib/helpers')
+
+//Creating 'ExpressHandlebars instance with a default layout
+const hbs = exphbs.create({
+    helpers,
+
+    //Uses multiple partial dirs, template in shared/templates are used
+    partialsDir : [
+       // "shared/templates/",
+		"views/partials/",
+    ]
+})
+
 //Importing mongoose for mongodb
 const mongoose = require('mongoose')
 mongoose.connect('mongodb://localhost/test', { useNewUrlParser : true, useUnifiedTopology : true });
@@ -55,9 +70,16 @@ viks.save((error, resposne)=>{
     console.log('the details are successfully on db')
 })
 
+//Setting up the app engine as handlebars
+app.engine('handlebars', exphbs())
+app.set('view engine', 'handlebars')
+
 //Serving webpage
 app.get('/', (req, res)=>{
-    res.send('Hello World')
+    res.render('home',
+    {
+        title:'Home'
+    })
 })
 
 app.listen(port, ()=>{
